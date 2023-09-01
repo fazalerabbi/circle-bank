@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  nginx:
+    build: ./docker/development/nginx
+    container_name: circle-bank-nginx
+    restart: unless-stopped
+    ports:
+      - "8100:80"
+      - "444:443"
+    volumes:
+      - .:/var/www/html
+      - ./docker/development/nginx/config/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      circle_bank:
+        ipv4_address: 192.168.98.2
+        aliases:
+          - nginx
+  php:
+    build: ./docker/development/php
+    container_name: circle-bank-php
+    volumes:
+      - .:/var/www/html
+    restart: unless-stopped
+    ports:
+      - "9002:9000"
+    networks:
+      circle_bank:
+        ipv4_address: 192.168.98.4
+        aliases:
+          - php
+
+networks:
+  circle_bank:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "192.168.98.0/24"
