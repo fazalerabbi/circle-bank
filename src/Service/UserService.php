@@ -4,19 +4,18 @@ namespace App\Service;
 
 class UserService
 {
-    private $users = [
+    private static $users = [
         [
             'user_id' => 1,
             'first_name' => 'John',
             'last_name' => 'Smith',
             'gender' => 'M',
             'accounts' => [
-
                 [
-                    'account_id' => 3441,
+                    'account_id' => 344,
                     'account_type' => 'saving',
-                    'account_balance' => 124011.22,
-                    'account_number' => 646334411
+                    'account_balance' => 10,
+                    'account_number' => 64633441
                 ],
             ],
         ],
@@ -111,7 +110,7 @@ class UserService
      */
     public function sortUsersData(string $key, $isAsc = true): array
     {
-        $users = $this->users;
+        $users = self::$users;
         if (!in_array($key, $this->userFields) && !in_array($key, $this->accountFields) ) {
             throw new \Exception(sprintf('%s is an invalid key', $key));
         }
@@ -165,9 +164,9 @@ class UserService
         return $users;
     }
 
-    private function getUser(int $userId): ?array
+    public function getUser(int $userId): ?array
     {
-        foreach ($this->users as $user) {
+        foreach (self::$users as $user) {
             if ($user['user_id'] === $userId) {
                 return $user;
             }
@@ -176,5 +175,15 @@ class UserService
     }
 
 
-
+    public function getAccountByNumber(int $accountNumber): ?array
+    {
+        foreach (self::$users as $user) {
+            foreach ($user['accounts'] as $account) {
+                if ($account['account_number'] === $accountNumber) {
+                    return $account;
+                }
+            }
+        }
+        return null;
+    }
 }

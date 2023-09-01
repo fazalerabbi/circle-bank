@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Command\DoBankTransactionsCommand;
 use App\Command\GetUserInfoCommand;
 use App\Command\SortUsersDataCommand;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -16,7 +17,8 @@ class Kernel extends BaseKernel
     {
         $command->addCommands([
             new GetUserInfoCommand(),
-            new SortUsersDataCommand()
+            new SortUsersDataCommand(),
+            new DoBankTransactionsCommand()
         ]);
     }
 
