@@ -11,11 +11,12 @@ class UserService
             'last_name' => 'Smith',
             'gender' => 'M',
             'accounts' => [
+
                 [
-                    'account_id' => 344,
-                    'account_type' => 'normal',
-                    'account_balance' => 12401.22,
-                    'account_number' => 64633441
+                    'account_id' => 3441,
+                    'account_type' => 'saving',
+                    'account_balance' => 124011.22,
+                    'account_number' => 646334411
                 ],
             ],
         ],
@@ -67,8 +68,7 @@ class UserService
         'user_id',
         'first_name',
         'last_name',
-        'gender',
-        'accounts'
+        'gender'
     ];
 
     private $accountFields = [
@@ -106,6 +106,65 @@ class UserService
         return implode(",", $accounts);
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function sortUsersData(string $key, $isAsc = true): array
+    {
+        $users = $this->users;
+        if (!in_array($key, $this->userFields) && !in_array($key, $this->accountFields) ) {
+            throw new \Exception(sprintf('%s is an invalid key', $key));
+        }
+
+        if ($key == 'account_type') {
+            usort($users, function ($a, $b) use($isAsc){
+                $aAccountTypes = array_column($a['accounts'], 'account_type');
+                $bAccountTypes = array_column($b['accounts'], 'account_type');
+
+                sort($aAccountTypes);
+                sort($bAccountTypes);
+
+                if ($isAsc) {
+                    return strcmp(implode(',', $aAccountTypes), implode(',', $bAccountTypes));
+                }
+
+                return strcmp(implode(',', $bAccountTypes), implode(',', $aAccountTypes));
+            });
+        } else {
+            usort($users, function ($a, $b) use ($key, $isAsc) {
+                if (in_array($key, $this->userFields)) {
+                    if ($a[$key] === $b[$key]) {
+                        return 0;
+                    }
+                    if ($isAsc) {
+                        return ($a[$key] < $b[$key]) ? -1 : 1;
+                    }
+                    return ($a[$key] < $b[$key]) ? 1 : -1;
+
+                }
+                else if (in_array($key, $this->accountFields)) {
+
+                    $aAccountKey = 0;
+                    $bAccountKey = 0;
+                    foreach ($a['accounts'] as $account) {
+                        $aAccountKey = $aAccountKey + $account[$key];
+                    }
+
+                    foreach ($b['accounts'] as $account) {
+                        $bAccountKey = $bAccountKey + $account[$key];
+                    }
+
+                    if ($isAsc) {
+                        return $bAccountKey < $aAccountKey ? 1 : -1;
+                    }
+                    return $bAccountKey < $aAccountKey ? -1 : 1;
+                }
+            });
+        }
+
+        return $users;
+    }
+
     private function getUser(int $userId): ?array
     {
         foreach ($this->users as $user) {
@@ -115,4 +174,7 @@ class UserService
         }
         return null;
     }
+
+
+
 }
