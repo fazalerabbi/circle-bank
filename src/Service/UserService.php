@@ -164,6 +164,22 @@ class UserService
         return $users;
     }
 
+    public function updateUser(int $userId, string $key, string $value): bool
+    {
+        $user = $this->getUser($userId);
+        if (!$user) {
+            throw new \Exception(sprintf('User not found with user Id = %s', $userId));
+        }
+
+        if (!in_array($key, $this->userFields)) {
+            throw new \Exception(sprintf('%s is an invalid key', $key));
+        }
+
+        $user[$key] = $value;
+
+        return true;
+    }
+
     public function getUser(int $userId): ?array
     {
         foreach (self::$users as $user) {

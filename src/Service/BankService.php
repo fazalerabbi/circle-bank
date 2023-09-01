@@ -4,6 +4,10 @@ namespace App\Service;
 
 class BankService
 {
+    private const accountTypes = [
+        'SAVINGS' => 'savings',
+        'CURRENT' => 'current'
+    ];
     public function __construct(private UserService $userService)
     {
     }
@@ -80,6 +84,34 @@ class BankService
 
         return $account['account_balance'];
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function switch($userId, $accountNumber, $switchType): string
+    {
+        if (!in_array($switchType, self::accountTypes)) {
+            throw new \Exception("Invalid account type");
+        }
+        $user = $this->userService->getUser($userId);
+        $account = $this->getAccountByUser($user, $accountNumber);
+
+        if (!$account) {
+            throw new \Exception("Account not found");
+        }
+
+        if ($account['account_type'] == 'savings' && $switchType == 'normal') {
+            $account['account_type'] = 'normal';
+        } else if ($account['account_type'] == 'normal' && $switchType == 'saving') {
+            if ($account['account_balance'] < 0) {
+                throw new \Exception("You can't switch to saving account with negative balance");
+            }
+
+            $account['account_type'] = 'saving';
+        }
+        return $account['account_type'];
+    }
+
 
     private function getAccountByUser($user, $accountNumber): array | null
     {
