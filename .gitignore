@@ -9,4 +9,5 @@
 /vendor/
 .env
 .DS_Store
+.idea
 ###< symfony/framework-bundle ###
