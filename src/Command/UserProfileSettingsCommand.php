@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Service\UserService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Repository\UserRepository;
 
 #[AsCommand(
     name: 'app:user-profile-settings',
@@ -21,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class UserProfileSettingsCommand extends Command
 {
-    public function __construct(private UserService $userService)
+    public function __construct(private UserRepository $userRepository)
     {
         parent::__construct();
     }
@@ -47,13 +47,13 @@ class UserProfileSettingsCommand extends Command
 
         try {
             if ($firstName) {
-                $data = $this->userService->updateUser((int) $userId, 'first_name', $firstName);
+                $data = $this->userRepository->updateUser((int) $userId, 'first_name', $firstName);
             }
             if ($lastName) {
-                $data = $this->userService->updateUser((int) $userId, 'last_name', $lastName);
+                $data = $this->userRepository->updateUser((int) $userId, 'last_name', $lastName);
             }
             if (in_array($gender, ['F', 'M'])) {
-                $data = $this->userService->updateUser((int) $userId, 'gender', $gender);
+                $data = $this->userRepository->updateUser((int) $userId, 'gender', $gender);
             }
             $io->success(sprintf("User profile settings are updated for user_id = %s", $userId));
         } catch (\Exception $e) {

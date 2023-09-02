@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Service\UserService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use App\Repository\UserRepository;
 
 #[AsCommand(
     name: 'app:get-sorted-data',
@@ -28,7 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class SortUsersDataCommand extends Command
 {
-    public function __construct(private UserService $userService)
+    public function __construct(private UserRepository $userRepository)
     {
         parent::__construct();
     }
@@ -45,12 +45,11 @@ class SortUsersDataCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $key = $input->getArgument('key');
         $desc = $input->getOption('desc');
-
         $sortAsc = !$desc;
 
         try {
-            $data = $this->userService->sortUsersData($key, $sortAsc);
-
+            $data = $this->userRepository->getUser($key, $sortAsc);
+            dump($data);
             $io->success(sprintf("Data is sorted on '%s' in %s", $key, $desc ? 'desc' : 'asc'));
         } catch (\Exception $e) {
             $io->error($e->getMessage());

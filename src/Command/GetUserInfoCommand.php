@@ -2,15 +2,13 @@
 
 namespace App\Command;
 
-use App\Service\UserService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
+use App\Repository\UserRepository;
 #[AsCommand(
     name: 'app:get-user-info',
     description: 'This command allows you to get the user info. It required two arguments.
@@ -19,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class GetUserInfoCommand extends Command
 {
-    public function __construct(private UserService $userService)
+    public function __construct(private UserRepository $userRepository)
     {
         parent::__construct();
     }
@@ -37,8 +35,8 @@ class GetUserInfoCommand extends Command
         $key    = $input->getArgument('key');
 
         try {
-            $data = $this->userService->getUserInfo((int) $userId, $key);
-            $io->success(sprintf("Data for user_id = %s and key = %s is %s", $userId, $key, $data));
+            $data = $this->userRepository->getUserKey($userId, $key);
+            $io->success(sprintf("Data for user_id = %s and key = %s values %s", $userId, $key, $data));
         } catch (\Exception $e) {
             $io->error($e->getMessage());
             return Command::FAILURE;

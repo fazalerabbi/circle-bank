@@ -10,4 +10,5 @@
 .env
 .DS_Store
 .idea
+pgsqldata/
 ###< symfony/framework-bundle ###
